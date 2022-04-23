@@ -1,4 +1,5 @@
 const UserSchema = require("../model/user.model");
+const Logger = require("../../../shared/logger");
 
 class UserService {
   /******** Get User By Name *******/
@@ -12,7 +13,7 @@ class UserService {
       };
 
       const newUser = await this.createUser(user);
-      console.log("=============== createUser ===============");
+      Logger.info("==========< createUser >==========");
       return newUser;
     } else {
       return isAvailableName;

@@ -1,3 +1,5 @@
+const Logger = require("../../../shared/logger");
+
 const UserService = require("../service/user.service");
 
 const userResolver = {
@@ -5,11 +7,11 @@ const userResolver = {
     /******* getUserByName ******/
     getUserByName: async (_, args) => {
       try {
-        console.log("=============== getUser ===============");
+        Logger.info("==========< getUser >==========");
         const { userName } = args;
         return await UserService.getUserByName(userName);
       } catch (error) {
-        console.error(error);
+        Logger.error(error);
         throw error;
       }
     },
@@ -19,11 +21,11 @@ const userResolver = {
     /******* createUser ******/
     createUser: async (_, args) => {
       try {
-        console.log("=============== createUser ===============");
+        Logger.info("==========< createUser >==========");
         const { user } = args;
         return await UserService.createUser(user);
       } catch (error) {
-        console.error(error);
+        Logger.error(error);
         throw error;
       }
     },

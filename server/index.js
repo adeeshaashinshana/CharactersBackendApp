@@ -6,6 +6,7 @@ const axios = require("axios");
 const { MongoClient } = require("mongodb");
 const { ApolloServer } = require("apollo-server-express");
 const mongoose = require("mongoose");
+const Logger = require("../shared/logger");
 
 /****** Import Application ******/
 const application = require("./application");
@@ -28,17 +29,17 @@ async function handleMongoDB(data) {
 
     // remove all previous documents in mongoDB collection
     await characters.deleteMany({});
-    console.log("==========< Removed all previous character data >==========");
+    Logger.info("==========< Removed all previous character data >==========");
 
     // this option prevents additional documents from being inserted if one fails
     const options = { ordered: true };
 
     // insert new documents into mongoDB
     const result = await characters.insertMany(data, options);
-    console.log(
+    Logger.info(
       `==========< ${result.insertedCount} documents were inserted >==========`
     );
-    console.log("==========< Data will refresh after 6 hours >==========");
+    Logger.info("==========< Data will refresh after 6 hours >==========");
   } finally {
     await client.close();
   }
@@ -46,7 +47,7 @@ async function handleMongoDB(data) {
 
 /******* get 1st data set from API ******/
 async function getInitialCharacterData() {
-  console.log("==========< Fetching data from API...");
+  Logger.info("==========< Fetching data from API...");
   await axios
     .get(characterAPI)
     .then((response) => {
@@ -54,7 +55,7 @@ async function getInitialCharacterData() {
       getRemainingCharacterData(response.data.info);
     })
     .catch((error) => {
-      console.log(error);
+      Logger.error(error);
     });
 }
 
@@ -67,7 +68,7 @@ async function getRemainingCharacterData(info) {
         allCharacterData.push(...response.data.results);
       })
       .catch((error) => {
-        console.log(error);
+        Logger.error(error);
       });
   }
   handleMongoDB(allCharacterData);
@@ -92,10 +93,10 @@ async function startServer() {
     useUnifiedTopology: true,
     useFindAndModify: false,
   });
-  console.log(`🙈 Mongoose Connected`);
+  Logger.info(`🙈 Mongoose Connected`);
 
   app.listen({ port: 4000 }, () => {
-    console.log(`🚀 Server ready at http://localhost:4000`);
+    Logger.info(`🚀 Server ready at http://localhost:4000`);
     getInitialCharacterData();
   });
 }
