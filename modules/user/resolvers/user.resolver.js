@@ -2,23 +2,12 @@ const UserService = require("../service/user.service");
 
 const userResolver = {
   Query: {
-    /******* getUserById ******/
-    getUserById: async (_, args) => {
+    /******* getUserByName ******/
+    getUserByName: async (_, args) => {
       try {
         console.log("=============== getUser ===============");
-        const { userId } = args;
-        return await UserService.getUserById(userId);
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
-    },
-
-    /******* getAllUsers ******/
-    getAllUsers: async (_, __) => {
-      try {
-        console.log("=============== getAllUsers ===============");
-        return await UserService.getAllUsers();
+        const { userName } = args;
+        return await UserService.getUserByName(userName);
       } catch (error) {
         console.error(error);
         throw error;
@@ -32,8 +21,7 @@ const userResolver = {
       try {
         console.log("=============== createUser ===============");
         const { user } = args;
-        const response = await UserService.createUser(user);
-        return response;
+        return await UserService.createUser(user);
       } catch (error) {
         console.error(error);
         throw error;
