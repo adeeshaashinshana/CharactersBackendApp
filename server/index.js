@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cron = require("node-cron");
 
 const express = require("express");
 const cors = require("cors");
@@ -39,7 +40,7 @@ async function handleMongoDB(data) {
     Logger.info(
       `==========< ${result.insertedCount} documents were inserted >==========`
     );
-    Logger.info("==========< Data will refresh after 6 hours >==========");
+    Logger.info("==========< Data will refresh after 1 hour >==========");
   } finally {
     await client.close();
   }
@@ -97,8 +98,19 @@ async function startServer() {
 
   app.listen({ port: 4000 }, () => {
     Logger.info(`🚀 Server ready at http://localhost:4000`);
-    getInitialCharacterData();
   });
 }
 
 startServer();
+getInitialCharacterData();
+
+cron.schedule(
+  "* */1 * * *",
+  () => {
+    Logger.info("==========< Data refresh started >==========");
+    getInitialCharacterData();
+  },
+  {
+    scheduled: true,
+  }
+);
