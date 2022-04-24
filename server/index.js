@@ -113,8 +113,8 @@ async function getAllCharacterData() {
   }
 
   // rename id as _id for mongoDB collection id
-  allCharacterData.forEach((object, index) => {
-    object._id = `${object.id}`;
+  allCharacterData.forEach((object) => {
+    object._id = object.id;
     delete object["id"];
   });
 
@@ -150,6 +150,7 @@ async function startServer() {
 
 startServer();
 
+// refetch data from API in every 12 hours
 cron.schedule(
   "0 */12 * * *",
   () => {
