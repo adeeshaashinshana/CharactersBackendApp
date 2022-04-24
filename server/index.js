@@ -1,6 +1,5 @@
 require("dotenv").config();
 const cron = require("node-cron");
-
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
@@ -8,6 +7,8 @@ const { MongoClient } = require("mongodb");
 const { ApolloServer } = require("apollo-server-express");
 const mongoose = require("mongoose");
 const Logger = require("../shared/logger");
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 /****** Import Application ******/
 const application = require("./application");
@@ -46,33 +47,77 @@ async function handleMongoDB(data) {
   }
 }
 
-/******* get 1st data set from API ******/
-async function getInitialCharacterData() {
+/******* get all character data from API ******/
+async function getAllCharacterData() {
   Logger.info("==========< Fetching data from API...");
-  await axios
-    .get(characterAPI)
-    .then((response) => {
-      allCharacterData.splice(0, allCharacterData.length);
-      allCharacterData.push(...response.data.results);
-      getRemainingCharacterData(response.data.info);
-    })
-    .catch((error) => {
-      Logger.error(error);
-    });
-}
 
-/******* get other all data from API ******/
-async function getRemainingCharacterData(info) {
-  for (let pageNo = 2; pageNo < info.pages + 1; pageNo++) {
-    await axios
-      .get(`${characterAPI}?page=${pageNo}`)
-      .then((response) => {
-        allCharacterData.push(...response.data.results);
-      })
-      .catch((error) => {
-        Logger.error(error);
-      });
+  // remove previous array data before fetch data
+  allCharacterData.splice(0, allCharacterData.length);
+
+  // fetch total page count from API
+  const pageResults = await fetch(characterAPI, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: `{
+        characters {
+          info {
+            pages
+          }
+        }
+      }`,
+    }),
+  });
+  const pageInfo = await pageResults.json();
+
+  // fetch all character data from API
+  for (
+    let pageNo = 1;
+    pageNo < pageInfo.data.characters.info.pages + 1;
+    pageNo++
+  ) {
+    const results = await fetch(characterAPI, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: `{
+          characters(page: ${pageNo}) {
+            results {
+              id
+              image
+              name
+              species
+              gender
+              origin {
+                name
+                dimension
+              }
+              status
+              episode {
+                id
+                name
+                air_date
+              }
+            }
+          }
+        }`,
+      }),
+    });
+    const characterData = await results.json();
+
+    allCharacterData.push(...characterData.data.characters.results);
   }
+
+  // rename id as _id for mongoDB collection id
+  allCharacterData.forEach((object, index) => {
+    object._id = `${object.id}`;
+    delete object["id"];
+  });
+
   handleMongoDB(allCharacterData);
 }
 
@@ -99,17 +144,17 @@ async function startServer() {
 
   app.listen({ port: 4000 }, () => {
     Logger.info(`🚀 Server ready at http://localhost:4000`);
+    getAllCharacterData();
   });
 }
 
 startServer();
-getInitialCharacterData();
 
 cron.schedule(
-  "* */12 * * *",
+  "0 */12 * * *",
   () => {
     Logger.info("==========< Data refresh started >==========");
-    getInitialCharacterData();
+    getAllCharacterData();
   },
   {
     scheduled: true,
