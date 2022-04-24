@@ -2,7 +2,8 @@ const { gql } = require("apollo-server-express");
 
 const characterTypeDef = gql`
   type Character {
-    _id: Int
+    id: ID!
+    characterID: Int
     name: String
     image: String
     species: String
@@ -25,7 +26,7 @@ const characterTypeDef = gql`
 
   extend type Query {
     getAllCharacters: [Character]
-    # getCharactersByIDs(characterIds: [ID!]): [Character!]
+    getCharactersByIDs(characterIds: [Int]): [Character]
   }
 `;
 

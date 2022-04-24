@@ -16,15 +16,15 @@ const characterResolver = {
     },
 
     /******* get Characters By IDs ******/
-    // getCharactersByIDs: async (_, args) => {
-    //   try {
-    //     Logger.info("===============< get Characters By IDs >===============");
-    //     const { characterIds } = args;
-    //     return await CharacterService.getCharactersByIDs(characterIds);
-    //   } catch (error) {
-    //     Logger.error(error);
-    //   }
-    // },
+    getCharactersByIDs: async (_, args) => {
+      try {
+        Logger.info("===============< get Characters By IDs >===============");
+        const { characterIds } = args;
+        return await CharacterService.getCharactersByIDs(characterIds);
+      } catch (error) {
+        Logger.error(error);
+      }
+    },
   },
 };
 
