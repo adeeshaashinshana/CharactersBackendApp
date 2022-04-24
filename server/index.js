@@ -40,7 +40,7 @@ async function handleMongoDB(data) {
     Logger.info(
       `==========< ${result.insertedCount} documents were inserted >==========`
     );
-    Logger.info("==========< Data will refresh after 1 hour >==========");
+    Logger.info("==========< Data will refresh after 12 hours >==========");
   } finally {
     await client.close();
   }
@@ -52,6 +52,7 @@ async function getInitialCharacterData() {
   await axios
     .get(characterAPI)
     .then((response) => {
+      allCharacterData.splice(0, allCharacterData.length);
       allCharacterData.push(...response.data.results);
       getRemainingCharacterData(response.data.info);
     })
@@ -105,7 +106,7 @@ startServer();
 getInitialCharacterData();
 
 cron.schedule(
-  "* */1 * * *",
+  "* */12 * * *",
   () => {
     Logger.info("==========< Data refresh started >==========");
     getInitialCharacterData();
