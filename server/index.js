@@ -114,7 +114,7 @@ async function getAllCharacterData() {
 
   // rename id as _id for mongoDB collection id
   allCharacterData.forEach((object) => {
-    object._id = object.id;
+    object.characterID = parseInt(object.id);
     delete object["id"];
   });
 
@@ -144,7 +144,7 @@ async function startServer() {
 
   app.listen({ port: 4000 }, () => {
     Logger.info(`🚀 Server ready at http://localhost:4000`);
-    getAllCharacterData();
+    // getAllCharacterData();
   });
 }
 

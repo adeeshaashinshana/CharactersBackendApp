@@ -4,6 +4,7 @@ const userTypeDef = gql`
   type User {
     id: ID!
     name: String!
+    savedCharacters: [Int]
   }
 
   input userCreateInput {
@@ -16,6 +17,7 @@ const userTypeDef = gql`
 
   type Mutation {
     createUser(user: userCreateInput!): User
+    updateUser(userId: ID!, characterIds: [Int]): User
   }
 `;
 

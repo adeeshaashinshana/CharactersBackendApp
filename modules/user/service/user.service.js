@@ -26,6 +26,18 @@ class UserService {
       return await UserSchema.create(user);
     }
   }
+
+  /******** update User *******/
+  async updateUser(userId, characterIds) {
+    const response = await UserSchema.findByIdAndUpdate(
+      userId,
+      {
+        savedCharacters: characterIds,
+      },
+      { new: true }
+    );
+    return response;
+  }
 }
 
 module.exports = new UserService();

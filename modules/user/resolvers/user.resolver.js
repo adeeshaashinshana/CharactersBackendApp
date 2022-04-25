@@ -29,6 +29,18 @@ const userResolver = {
         throw error;
       }
     },
+
+    /******* updateUser ******/
+    updateUser: async (_, args) => {
+      try {
+        Logger.info("==========< updateUser >==========");
+        const { userId, characterIds } = args;
+        return await UserService.updateUser(userId, characterIds);
+      } catch (error) {
+        Logger.error(error);
+        throw error;
+      }
+    },
   },
 };
 
