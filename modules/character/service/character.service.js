@@ -3,7 +3,7 @@ const CharacterSchema = require("../model/character.model");
 class CharacterService {
   /******** get All Characters *******/
   async getAllCharacters() {
-    return await CharacterSchema.find().limit(10);
+    return await CharacterSchema.find();
   }
 
   /******* get Characters By IDs ******/

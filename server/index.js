@@ -144,7 +144,6 @@ async function startServer() {
 
   app.listen({ port: 4000 }, () => {
     Logger.info(`🚀 Server ready at http://localhost:4000`);
-    // getAllCharacterData();
   });
 }
 
