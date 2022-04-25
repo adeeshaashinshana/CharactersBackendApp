@@ -28,17 +28,19 @@ const characterSchema = new mongoose.Schema(
     status: {
       type: String,
     },
-    episode: {
-      id: {
-        type: Number,
+    episode: [
+      {
+        id: {
+          type: Number,
+        },
+        name: {
+          type: String,
+        },
+        air_date: {
+          type: String,
+        },
       },
-      name: {
-        type: String,
-      },
-      air_date: {
-        type: String,
-      },
-    },
+    ],
   },
   {
     collection: "characters",
